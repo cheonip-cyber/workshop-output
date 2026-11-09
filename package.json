@@ -1,0 +1,11 @@
+{
+  "name": "sm-judgment-court",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.0.0"
+  }
+}

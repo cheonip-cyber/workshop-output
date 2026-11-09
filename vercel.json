@@ -1,0 +1,18 @@
+{
+  "framework": null,
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/api/rooms/:path*",
+      "destination": "/api/court?route=rooms/:path*"
+    },
+    {
+      "source": "/join/:code",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/display/:code",
+      "destination": "/index.html"
+    }
+  ]
+}
