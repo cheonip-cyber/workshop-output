@@ -3,6 +3,10 @@
   "outputDirectory": "public",
   "rewrites": [
     {
+      "source": "/api/rooms",
+      "destination": "/api/court?route=rooms"
+    },
+    {
       "source": "/api/rooms/:path*",
       "destination": "/api/court?route=rooms/:path*"
     },

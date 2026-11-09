@@ -26,7 +26,7 @@ export default {
     try{
       const url=new URL(request.url);
       const route=url.searchParams.get('route');
-      if(route!==null)url.pathname='/api/'+route;
+      if(route!==null)url.pathname='/api/'+route.replace(/\/+$/,'');
       const routed=new Request(url,request);
       return await handle(routed);
     }catch(error){
