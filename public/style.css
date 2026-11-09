@@ -177,3 +177,45 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none;justify-conten
   .display .qr-stage,.join .receipt-stamp,.display .gavel,.display .spark{animation:none}
 }
 
+
+/* Arena stage */
+.display .scene:not(.lobby){gap:clamp(9px,1.9vh,19px)}
+.display .scene:not(.lobby) .prompt{font-size:clamp(24px,3.65vw,66px)}
+.display .arena-options{position:relative;gap:clamp(30px,8vw,110px)}
+.display .arena-options:after{content:"";position:absolute;top:50%;left:50%;width:clamp(26px,5vw,72px);aspect-ratio:90/64;transform:translate(-50%,-50%);background:url("/court-art/arena-vs.svg") center / contain no-repeat;pointer-events:none}
+.display .arena-options .choice{min-height:70px;padding:10px 16px}
+.display .arena-options .choice strong{font-size:clamp(22px,3vw,43px)}
+.display .arena-options .choice span{font-size:clamp(14px,1.65vw,27px)}
+.arena{position:relative;display:grid;gap:6px;width:min(100%,1000px);padding:12px 15px;border:1px solid #e6b76e65;border-radius:14px;background:#080f21dc;box-shadow:0 0 32px #14294d70}
+.arena-top,.arena-energy,.arena-change{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.arena-mode{font-size:clamp(12px,1.55vw,23px);font-weight:900;color:#ffd58a}
+.arena-count{font-size:clamp(12px,1.45vw,21px);font-weight:800}
+.arena-floor{display:flex;align-items:end;justify-content:center;min-height:clamp(66px,14vh,160px);padding:9px 6px;background:url("/court-art/arena-rails.svg") center bottom / 100% 100% no-repeat}
+.arena-split{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8%}
+.arena-blocks{--tile:clamp(15px,2.8vw,42px);display:flex;flex-wrap:wrap;justify-content:center;align-content:end;max-width:calc(var(--tile)*12 + 22px);gap:2px;margin:auto;background:none}
+.arena-split .arena-blocks{max-width:calc(var(--tile)*8 + 14px)}
+.arena-blocks i{width:var(--tile);aspect-ratio:48/28;background:url("/court-art/vote-neutral.svg") center / contain no-repeat;position:relative}
+.arena-blocks.a i{background-image:url("/court-art/vote-a.svg")}
+.arena-blocks.b i{background-image:url("/court-art/vote-b.svg")}
+.arena-blocks i.fresh{animation:arena-land .48s cubic-bezier(.16,.75,.32,1.16) var(--delay) both}
+.arena-blocks i.fresh:after{content:"";position:absolute;inset:-8px -7px;background:url("/court-art/landing-ring.svg") center / contain no-repeat;animation:arena-ring .55s ease var(--delay) both}
+@keyframes arena-land{from{opacity:0;transform:translateY(-23px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes arena-ring{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(1.45)}}
+.arena-energy{font-size:clamp(13px,1.65vw,24px);font-weight:800}
+.arena-energy span:first-child{color:#ffbdd6}.arena-energy span:last-child{color:#b5e2ff}
+.arena-meter{position:relative;height:clamp(14px,2.7vh,27px);border:1px solid #f5cd88a6;border-radius:30px;background:linear-gradient(90deg,#193969,#4794d0);overflow:visible}
+.arena-meter i,.arena-meter b{position:absolute;display:block;left:0;top:0;height:100%;width:var(--share);animation:arena-share .64s ease-out both}
+.arena-meter i{background:linear-gradient(90deg,#752646,#e25287);border-radius:30px 0 0 30px}
+.arena-meter b:after{content:"";position:absolute;right:-10px;top:50%;width:20px;height:35px;transform:translateY(-50%);background:url("/court-art/arena-core.svg") center / contain no-repeat;filter:drop-shadow(0 0 6px #ffd37b)}
+@keyframes arena-share{from{width:var(--before)}to{width:var(--share)}}
+.arena-meter.empty{height:auto;padding:5px;background:#18253a;color:#b8c9e0;font-size:13px}
+.arena-unit,.arena-tie{color:#eed499;font-size:12px}
+.arena-change{justify-content:center;flex-wrap:wrap;background:url("/court-art/verdict-trail.svg") center / min(90%,400px) auto no-repeat;padding:4px;font-size:clamp(12px,1.4vw,19px)}
+.arena-change span{background:#101a30;padding:4px 9px;border-radius:6px}
+.arena-change .retry-icon{width:23px;height:23px}
+@media(prefers-reduced-motion:reduce){.arena-blocks i.fresh,.arena-blocks i.fresh:after,.arena-meter i,.arena-meter b{animation:none}.arena-blocks i.fresh:after{display:none}}
+
+.arena.published .arena-split>div{animation:arena-separate .55s ease-out both;--slide:15%}
+.arena.published .arena-split>div:nth-child(2){--slide:-15%}
+@keyframes arena-separate{from{opacity:.25;transform:translateX(var(--slide))}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.arena.published .arena-split>div{animation:none}}

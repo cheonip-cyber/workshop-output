@@ -100,13 +100,54 @@ function animate(s) {
     }
   }
 }
+let arenaPrevious=null;
+function arenaBlocks(count, unit, color, oldCount=0) {
+  const total=Math.ceil(count/unit);
+  const old=Math.ceil(oldCount/unit);
+  return '<div class="arena-blocks '+color+'" aria-hidden="true">'+
+    Array.from({length:total},(_,i)=>'<i class="'+(i>=old?'fresh':'')+'" style="--delay:'+Math.min(10,Math.max(0,i-old))*33+'ms"></i>').join('')+'</div>';
+}
+function arenaBar(totals, previous) {
+  if(!totals.total) return '<div class="arena-meter empty"><span>아직 접수된 표가 없습니다</span></div>';
+  const a=Math.round(totals.a/totals.total*100);
+  const boundary=previous?.total?Math.round(previous.a/previous.total*100):50;
+  return '<div class="arena-energy"><span>A <strong>'+totals.a+'표 · '+a+'%</strong></span><span>B <strong>'+totals.b+'표 · '+(100-a)+'%</strong></span></div>'+
+    '<div class="arena-meter" style="--share:'+a+'%;--before:'+boundary+'%"><i></i><b></b></div>';
+}
+function arena(s) {
+  const old=arenaPrevious?.round===s.round && arenaPrevious?.pass===s.pass ? arenaPrevious : null;
+  const published=s.phase==='reveal';
+  const totals=published?s.result:s.live;
+  const unit=Math.max(1,Math.ceil(s.received/42));
+  const sameSplit=old?.live && !published;
+  const stacks=totals
+    ? '<div class="arena-split"><div>'+arenaBlocks(totals.a,unit,'a',sameSplit?old.live.a:0)+'</div><div>'+arenaBlocks(totals.b,unit,'b',sameSplit?old.live.b:0)+'</div></div>'
+    : arenaBlocks(s.received,unit,'neutral',old?.live?0:old?.received||0);
+  const count='<span class="arena-count">'+s.received+'표 접수'+(published?'':' / '+Math.max(s.participants,s.received)+'명 연결')+'</span>';
+  const previous=published?s.priorResult:old?.live;
+  const change=s.changes?'<div class="arena-change">'+retryIcon+'<span>A → B <b>'+s.changes.ab+'명</b></span><span>B → A <b>'+s.changes.ba+'명</b></span></div>':'';
+  return '<section class="arena '+(published?'published':'')+'" aria-label="판단 아레나"><div class="arena-top"><span class="arena-mode">'+(published?'판결 공개':s.liveMatch?'라이브 매치':'판결 접수')+'</span>'+count+'</div>'+
+    '<div class="arena-floor">'+stacks+'</div>'+
+    (unit>1?'<small class="arena-unit">한 블록 최대 '+unit+'표</small>':'')+
+    (totals?arenaBar(totals,previous):'')+
+    (published&&totals.total&&totals.a===totals.b?'<span class="arena-tie">균형 판결</span>':'')+change+'</section>';
+}
+function personalChange(s) {
+  if(!s.previousChoice||!s.choice)return '';
+  const label=s.previousChoice===s.choice?s.choice+' 유지':s.previousChoice+' → '+s.choice;
+  return '<div class="reversal">'+retryIcon+'<span>내 선택 <strong>'+label+'</strong></span></div>';
+}
 function audience(s) {
   if(s.phase==='lobby') return '<section class="scene lobby">'+brand+'<h1>SM 판단법정</h1>'+
     (role==='display'?'<div class="qr qr-stage"><img src="/api/rooms/'+s.code+'/qr" alt="참여 QR"></div><a class="join-address" href="'+esc(s.join)+'">'+esc(s.join)+'</a>':'<span class="stamp">입장 완료</span>')+
     '<div class="live"><i></i> 배심원 '+s.participants+'명</div></section>';
-  return '<section class="scene phase-'+s.phase+'">'+headline(s)+'<h1 class="prompt">'+esc(s.item.prompt)+'</h1>'+
-    (s.phase==='reveal'?result(s)+(s.comparison===null?'':'<div class="reversal">'+retryIcon+'<span>선택 변경 <strong>'+s.comparison+'명</strong></span></div>'):'<div class="choices">'+choices(s,s.phase==='voting'&&role==='join')+'</div>')+
-    (s.phase==='voting'?(role==='display'?'<div class="live"><i></i> '+s.received+' / '+Math.max(s.participants,s.received)+' 접수</div>':'<div class="vote-state">'+(s.choice?s.choice+'안 접수 · 마감 전 변경 가능':'A 또는 B를 선택하세요')+'</div>'):
+  const outcome=s.phase==='reveal';
+  const panel=outcome
+    ? (role==='display'?'<div class="choices arena-options">'+choices(s,false)+'</div>'+arena(s):result(s)+personalChange(s))
+    : '<div class="choices '+(role==='display'?'arena-options':'')+'">'+choices(s,s.phase==='voting'&&role==='join')+'</div>'+
+      (role==='display'?arena(s):'');
+  return '<section class="scene phase-'+s.phase+'">'+headline(s)+'<h1 class="prompt">'+esc(s.item.prompt)+'</h1>'+panel+
+    (s.phase==='voting'&&role==='join'?'<div class="vote-state">'+(s.choice?s.choice+'안 접수 · 마감 전 변경 가능':'A 또는 B를 선택하세요')+'</div>':
       s.phase==='closed'?'<div class="stamp">투표 마감</div>':'')+'</section>';
 }
 function controls(s) {
@@ -115,6 +156,9 @@ function controls(s) {
     s.phase==='voting'?[button('close','투표 마감','gold')]:
     s.phase==='closed'?[button('reveal','결과 공개','gold')]:
     [button('retry','재판결','gold'),...(s.round<s.items.length?[button('next','다음 안건','gold')]:[])];
+  if(s.phase==='lobby'||s.phase==='voting'){
+    actions.push(button(s.liveMatch?'live-off':'live-on',s.liveMatch?'라이브 매치 끄기':'라이브 매치 켜기'));
+  }
   const compare=s.comparison===null?'':'<div class="compare"><strong>직전 판결과 비교</strong><br>직전 A '+s.previous.a+' · B '+s.previous.b+' → 이번 A '+s.result.a+' · B '+s.result.b+'<br>선택 변경 '+s.comparison+'명</div>';
   return '<div class="control-top"><span class="section-kicker">투표 진행</span>'+headline(s)+'<span class="tag">'+stage[s.phase]+'</span></div><h2>'+esc(s.item.prompt)+'</h2>'+
     (s.result?result(s):'<div class="choices">'+choices(s,false)+'</div>')+
@@ -176,6 +220,7 @@ function paint(s) {
     app.innerHTML=(s.phase==='lobby'?'':'<div class="audience-home">'+brand+'</div>')+audience(s);
     if(active) app.querySelector('[data-value="'+active+'"]')?.focus({preventScroll:true});
     animate(s);
+    if(role==='display')arenaPrevious=s;
   }
 }
 function say(message){status.textContent=message;}
