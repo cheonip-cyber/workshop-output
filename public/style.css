@@ -124,3 +124,56 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none;justify-conten
   .admin main:has(.round-actions){padding-bottom:0}
   .admin:has(.round-actions){padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+
+/* Courtroom assets are decorative so live text and QR remain readable. */
+.display{
+  background:#0c1220 linear-gradient(#080f20a8,#080f2055);
+  background-image:linear-gradient(180deg,#080f203d,#080f202e 45%,#080f2078),url("/court-art/stage-wide.webp");
+  background-position:center;background-size:cover;background-attachment:fixed;
+}
+.join{
+  background:#101927;
+  background-image:linear-gradient(180deg,#0d162a59,#09111e32 48%,#09111ea8),url("/court-art/stage-mobile.webp");
+  background-position:center;background-size:cover;background-attachment:fixed;
+}
+.display .prompt,.join .prompt{text-shadow:0 2px 13px #080d18,0 0 30px #080d1890}
+.display .scene:before,.join .scene:before{opacity:.35}
+.court-logo .emblem{object-fit:contain}
+.eyebrow .retry-icon{display:inline-block;width:19px;height:19px;vertical-align:middle;margin-right:5px}
+.display .choice.a,.join .choice.a,.display .verdict.a,.join .verdict.a{
+  background-image:url("/court-art/card-a.svg"),linear-gradient(145deg,#682641,#291523);
+}
+.display .choice.b,.join .choice.b,.display .verdict.b,.join .verdict.b{
+  background-image:url("/court-art/card-b.svg"),linear-gradient(145deg,#244c80,#112742);
+}
+.display .choice,.join .choice,.display .verdict,.join .verdict{background-size:100% 100%;background-repeat:no-repeat}
+.join button.choice:active{transform:scale(.985)}
+.join .receipt-stamp,.display .stamp,.join .stamp{
+  border:0;background:url("/court-art/stamp-frame.svg") center / 100% 100% no-repeat;
+  color:#fff0cb;padding:10px 19px;display:inline-block;transform:rotate(-4deg);box-shadow:none
+}
+.join .receipt-stamp{font-weight:900;animation:receipt-stamp .34s cubic-bezier(.18,.8,.3,1) both}
+@keyframes receipt-stamp{from{opacity:.2;transform:scale(1.28) rotate(-9deg)}to{opacity:1;transform:scale(1) rotate(-4deg)}}
+.display .qr-stage{animation:qr-halo 2.8s ease-in-out infinite}
+@keyframes qr-halo{50%{box-shadow:0 0 53px 7px #f2bf6266}}
+.display .gavel{top:12%;right:7%;width:clamp(100px,15vw,250px);height:clamp(78px,11vw,174px);z-index:3;animation:court-gavel-scene .8s ease both}
+.gavel-hammer,.gavel-base,.gavel-impact{position:absolute;pointer-events:none;object-fit:contain}
+.gavel-hammer{width:100%;height:100%;inset:0;z-index:2;transform-origin:76% 65%;animation:court-hammer .63s ease both}
+.gavel-base{width:55%;height:41%;left:0;bottom:-1%;z-index:1}
+.gavel-impact{width:140%;height:79%;left:-37%;bottom:-23%;z-index:3;animation:court-impact .64s ease both}
+@keyframes court-gavel-scene{0%,100%{opacity:0}20%,70%{opacity:1}}
+@keyframes court-hammer{0%{transform:translateY(-16%) rotate(24deg)}36%{transform:translateY(3%) rotate(-17deg)}53%{transform:translateY(-4%) rotate(-6deg)}100%{transform:rotate(-10deg)}}
+@keyframes court-impact{0%,29%{opacity:0;transform:scale(.55)}40%{opacity:.8}100%{opacity:0;transform:scale(1.35)}}
+.display .spark{
+  width:13px;height:19px;box-shadow:none;border-radius:0;background:transparent url("/court-art/spark-shard.svg") center / contain no-repeat;
+  animation:spark .9s ease-out var(--delay,0s) both;opacity:0
+}
+.display .spark.star{width:20px;height:20px;background-image:url("/court-art/spark-star.svg")}
+@keyframes spark{from{opacity:.9;transform:scale(.4)}to{transform:translate(var(--dx),var(--dy)) rotate(var(--spin));opacity:0}}
+.display .verdict .fill{animation-delay:.2s}
+.reversal{display:flex;align-items:center;gap:8px;padding:8px 13px;border:1px solid #f6d59650;border-radius:9px;background:#121d2acc;color:#fff1cc;font-size:clamp(13px,1.5vw,20px)}
+.reversal .retry-icon{width:24px;height:24px}
+@media(prefers-reduced-motion:reduce){
+  .display .qr-stage,.join .receipt-stamp,.display .gavel,.display .spark{animation:none}
+}
+

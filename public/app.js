@@ -31,7 +31,8 @@ const api = async (suffix='',body,override) => {
   if(!response.ok) throw Object.assign(new Error(data.error),{status:response.status});
   return data;
 };
-const emblem = '<svg class="emblem" aria-hidden="true" viewBox="0 0 80 80"><path d="M40 13v48M23 63h34M15 28h50M40 18l-25 10m25-10 25 10M15 28l-10 22h20L15 28Zm50 0L55 50h20L65 28Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><circle cx="40" cy="13" r="3" fill="currentColor"/></svg>';
+const emblem = '<img class="emblem" src="/court-art/court-emblem.svg" alt="" width="80" height="80">';
+const retryIcon = '<img class="retry-icon" src="/court-art/retry-arrow.svg" alt="" width="22" height="22">';
 const passLabel = pass => pass === 1 ? '1차 판결' : '재판결 '+(pass-1)+'회';
 const brand = '<a class="court-logo" href="/?home=1" aria-label="SM 판단법정 홈">'+emblem+'<strong>SM 판단법정</strong></a>';
 let draft = [], dirty = false;
@@ -41,14 +42,14 @@ function home() {
     '<button class="btn gold" data-action="new">새 방 열기</button></div></section>';
 }
 function headline(s) {
-  return '<span class="eyebrow">ROUND '+String(s.round).padStart(2,'0')+' <b>·</b> '+passLabel(s.pass)+'</span>';
+  return '<span class="eyebrow">ROUND '+String(s.round).padStart(2,'0')+' <b>·</b> '+(s.pass>1?retryIcon:'')+passLabel(s.pass)+'</span>';
 }
 function choices(s,enabled) {
   return ['A','B'].map(letter=>{
     const value=esc(s.item[letter.toLowerCase()]);
     const selected=s.choice===letter;
     return enabled
-      ? '<button class="choice '+letter.toLowerCase()+(selected?' selected':'')+'" data-action="vote" data-value="'+letter+'" aria-pressed="'+selected+'"><strong>'+letter+'</strong><span>'+value+'</span>'+(selected?'<small>접수 완료 ✓</small>':'')+'</button>'
+      ? '<button class="choice '+letter.toLowerCase()+(selected?' selected':'')+'" data-action="vote" data-value="'+letter+'" aria-pressed="'+selected+'"><strong>'+letter+'</strong><span>'+value+'</span>'+(selected?'<small class="receipt-stamp">접수 완료 ✓</small>':'')+'</button>'
       : '<div class="choice '+letter.toLowerCase()+'"><strong>'+letter+'</strong><span>'+value+'</span></div>';
   }).join('');
 }
@@ -69,41 +70,42 @@ function animate(s) {
   if(reduced.matches) return;
   const scene=app.querySelector('.scene');
   scene?.animate([{opacity:0,transform:'scale(.982)'},{opacity:1,transform:'scale(1)'}],{duration:450,easing:'ease-out'});
-  if(s.phase==='voting'){
+  if(s.phase==='voting'||s.phase==='reveal'){
     const gavel=document.createElement('div');
     gavel.className='gavel';
     gavel.setAttribute('aria-hidden','true');
-    gavel.innerHTML='<svg viewBox="0 0 120 100"><path d="M18 88h84M70 52l34 29M36 26l28 24m-40-9 28 24M35 20l31 27-17 21-31-27Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    gavel.innerHTML='<img class="gavel-hammer" src="/court-art/gavel.webp" alt=""><img class="gavel-base" src="/court-art/gavel-block.svg" alt=""><img class="gavel-impact" src="/court-art/impact-ray.svg" alt="">';
     scene?.append(gavel);
-    setTimeout(()=>gavel.remove(),630);
+    setTimeout(()=>gavel.remove(),800);
   }
   if(s.phase!=='reveal') return;
   const digits=[...app.querySelectorAll('[data-target]')];
   if(s.result.total){
-    const start=performance.now();
+    const start=performance.now()+200;
     function frame(t){
-      const progress=Math.min(1,(t-start)/850);
+      const progress=Math.max(0,Math.min(1,(t-start)/850));
       for(const digit of digits) digit.textContent=Math.round(Number(digit.dataset.target)*(1-(1-progress)**3))+'%';
       if(progress<1&&digits[0]?.isConnected) requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
     for(let i=0;i<38;i++){
       const sparkle=document.createElement('i');
-      sparkle.className='spark';
+      sparkle.className=i%4===0?'spark star':'spark';
+      sparkle.style.setProperty('--delay',(.55+Math.random()*.13)+'s');
       sparkle.style.setProperty('--dx',(Math.random()-.5)*95+'vw');
       sparkle.style.setProperty('--dy',(Math.random()-.6)*84+'vh');
       sparkle.style.setProperty('--spin',Math.random()*480+'deg');
       scene?.append(sparkle);
-      setTimeout(()=>sparkle.remove(),1300);
+      setTimeout(()=>sparkle.remove(),1650);
     }
   }
 }
 function audience(s) {
   if(s.phase==='lobby') return '<section class="scene lobby">'+brand+'<h1>SM 판단법정</h1>'+
-    (role==='display'?'<div class="qr"><img src="/api/rooms/'+s.code+'/qr" alt="참여 QR"></div><a class="join-address" href="'+esc(s.join)+'">'+esc(s.join)+'</a>':'<span class="stamp">입장 완료</span>')+
+    (role==='display'?'<div class="qr qr-stage"><img src="/api/rooms/'+s.code+'/qr" alt="참여 QR"></div><a class="join-address" href="'+esc(s.join)+'">'+esc(s.join)+'</a>':'<span class="stamp">입장 완료</span>')+
     '<div class="live"><i></i> 배심원 '+s.participants+'명</div></section>';
   return '<section class="scene phase-'+s.phase+'">'+headline(s)+'<h1 class="prompt">'+esc(s.item.prompt)+'</h1>'+
-    (s.phase==='reveal'?result(s):'<div class="choices">'+choices(s,s.phase==='voting'&&role==='join')+'</div>')+
+    (s.phase==='reveal'?result(s)+(s.comparison===null?'':'<div class="reversal">'+retryIcon+'<span>선택 변경 <strong>'+s.comparison+'명</strong></span></div>'):'<div class="choices">'+choices(s,s.phase==='voting'&&role==='join')+'</div>')+
     (s.phase==='voting'?(role==='display'?'<div class="live"><i></i> '+s.received+' / '+Math.max(s.participants,s.received)+' 접수</div>':'<div class="vote-state">'+(s.choice?s.choice+'안 접수 · 마감 전 변경 가능':'A 또는 B를 선택하세요')+'</div>'):
       s.phase==='closed'?'<div class="stamp">투표 마감</div>':'')+'</section>';
 }
