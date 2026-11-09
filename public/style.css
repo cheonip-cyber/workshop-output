@@ -49,3 +49,78 @@
   .join .scene{gap:10px;padding-top:max(12px,env(safe-area-inset-top))}
   .join .choice{min-height:76px}
 }
+
+/* Presenter workspace */
+.site-footer{display:block;text-align:center;padding:8px 16px max(8px,env(safe-area-inset-bottom));font-size:10px;color:#bbb8c8;letter-spacing:.02em}
+main,.scene{min-height:calc(100dvh - 32px)}
+.court-logo{display:inline-flex;align-items:center;gap:9px;color:inherit;text-decoration:none;white-space:nowrap;font-weight:800}
+.court-logo .emblem{width:36px;height:36px;flex:none}
+.audience-home{position:absolute;top:max(9px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));z-index:3}
+.audience-home .court-logo strong{display:none}
+.audience-home .emblem{width:32px;height:32px}
+.court-home p{max-width:26ch;color:var(--muted)}
+.court-home .court-logo strong{display:none}
+.court-home .court-logo .emblem{width:74px;height:74px}
+a.btn{display:inline-flex;align-items:center;text-decoration:none;justify-content:center}
+.admin{color-scheme:light;color:#17263d;background:#f3f5f9}
+.admin .site-footer{color:#657288}
+.admin .bar{background:#14243b;color:white;border-bottom:1px solid #263a52;padding:12px max(18px,calc((100vw - 1230px)/2))}
+.admin .bar .btn{background:#233a56;color:#fff;border-color:#4f6380}
+.admin .bar .btn.primary{background:#f6d596;color:#252039;border-color:#f6d596}
+.workspace-head{max-width:1278px;margin:auto;padding:25px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.workspace-head h1{font-size:clamp(25px,4vw,37px);margin-top:5px}
+.section-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#58677b}
+.room-code{white-space:nowrap;border:1px solid #dbe2ee;padding:8px 11px;background:#fff;border-radius:9px;color:#42536b;font-size:12px}
+.room-code b{color:#182d48;letter-spacing:.1em;margin-left:4px}
+.admin .console{max-width:1278px;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:18px}
+.main-column{display:flex;flex-direction:column;min-width:0;gap:18px}
+.admin .card{align-self:stretch;background:#fff;border:1px solid #dce3ec;box-shadow:0 5px 20px #1b35550b;padding:20px;border-radius:14px;gap:14px}
+.admin .card h2{font-size:clamp(17px,2.5vw,23px)}
+.admin .card .eyebrow,.admin .minor,.admin .live,.admin .result-foot{color:#52647a}
+.admin .card .eyebrow{letter-spacing:.06em;font-size:11px}
+.admin .tag{background:#edf3fa;color:#203d61;border:1px solid #d4dfed;font-weight:750}
+.admin .control-top{flex-wrap:wrap;justify-content:flex-start}
+.admin .control-top .tag{margin-left:auto}
+.admin .btn{background:#fff;border:1px solid #ced8e5;color:#263951}
+.admin .btn:hover:not(:disabled){background:#edf3fa}
+.admin .btn.gold,.admin .btn.primary{background:#193352;color:white;border-color:#193352;box-shadow:none}
+.admin .btn.gold:hover:not(:disabled),.admin .btn.primary:hover:not(:disabled){background:#274b73}
+.admin .card .choice,.admin .card .verdict{min-height:92px}
+.admin .compare,.admin .history{background:#edf3f9;color:#283e57}
+.admin .share .join-address{color:#254f7e;font-size:13px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.agenda-row{min-width:0;margin:0 0 12px;padding:12px 14px 14px;border:1px solid #dae3ee;border-radius:10px;background:#f8fafd}
+.agenda-row legend,.agenda-row label{color:#263d58;font-size:13px;font-weight:750}
+.agenda-row legend{padding:0 7px}
+.agenda-row label{display:block;min-width:0}
+.agenda-row input,.admin .agenda-row textarea{display:block;width:100%;min-height:42px;margin-top:5px;padding:9px 10px;background:white;color:#182a42;border:1px solid #c6d2e1;border-radius:7px;font:inherit;font-weight:500}
+.agenda-row label b{font-size:11px;border-radius:4px;color:#fff;background:#752e4a;padding:2px 5px}
+.option-fields label+label b{background:#234c7d}
+.option-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.admin .btn.small{min-height:32px;margin-top:9px;font-size:12px;padding:5px 10px}
+.admin .qr-button{width:max-content;max-width:100%;padding:5px;box-shadow:none;border-color:#d8e3ef}
+.admin .qr-button img{width:128px;height:128px}
+.admin dialog{width:min(440px,calc(100% - 28px));max-height:90dvh;overflow:auto;border:1px solid #d6e0ee;background:white;color:#14263e;border-radius:15px;padding:18px;box-shadow:0 20px 70px #15253b50}
+.admin dialog::backdrop{background:#0d1729ba}
+.qr-panel{display:grid;gap:13px;justify-items:center}
+.qr-panel .section-head{width:100%}
+.qr-panel img{width:min(300px,100%);max-height:49dvh;object-fit:contain}
+.admin #status:not(:empty){z-index:6}
+@media(max-width:720px){
+  .admin .console{grid-template-columns:1fr;padding:12px}
+  .workspace-head{padding:18px 12px 0}
+  .admin .card{padding:14px}
+  .admin .round-actions{background:#fff;border-top:1px solid #dce3ec}
+  .admin .agenda-row input,.admin .agenda-row textarea{font-size:16px}
+  .option-fields{grid-template-columns:1fr}
+  .join .scene{min-height:calc(100svh - 32px);padding-top:max(39px,calc(env(safe-area-inset-top) + 35px))}
+}
+
+.admin .court-home h1{background:none;color:#172c48}
+.admin .court-home p{color:#52647a}
+.scene.lobby .court-logo strong{display:none}
+.scene.lobby .court-logo .emblem{width:74px;height:74px}
+@media(max-width:720px){
+  .admin main:has(.round-actions){padding-bottom:0}
+  .admin:has(.round-actions){padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+}
